@@ -20,7 +20,7 @@ These are the notes from a meeting with the frontend developer that describe wha
 - Current Order by user (args: user id)[token required]
 - [OPTIONAL] Completed Orders by user (args: user id)[token required]
 
-## Data Shapes
+## Data Shapes 
 #### Product
 -  id
 - name
