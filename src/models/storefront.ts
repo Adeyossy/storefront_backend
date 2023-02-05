@@ -1,11 +1,5 @@
 import db from "../db/db"
-
-export type Product = {
-  id: number,
-  name: string,
-  price: number,
-  category: string
-}
+import { Product } from "./types";
 
 export class ProductsDB {
   queryProcessor = async (query: string): Promise<Product[]> => {
@@ -21,7 +15,24 @@ export class ProductsDB {
 
   getIndex = async (): Promise<Product[]> => {
     try {
-      return this.queryProcessor('SELECT * FROM products');
+      return this.queryProcessor('SELECT * FROM products;');
+    } catch (error) {
+      throw new Error(`An error occurred: ${error}`);
+    }
+  }
+
+  showProduct = async (productId: string): Promise<Product[]> => {
+    try {
+      return this.queryProcessor(`SELECT * FROM products WHERE id=${productId};`);
+    } catch (error) {
+      throw new Error(`An error occurred: ${error}`);
+    }
+  }
+
+  createProduct = async (product: Product): Promise<Product[]> => {
+    try {
+      return this.queryProcessor(`INSERT INTO products (id, name, price, category) 
+      VALUES (${product.name}, ${product.price}, ${product.category});`);
     } catch (error) {
       throw new Error(`An error occurred: ${error}`);
     }
