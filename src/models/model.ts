@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Base class for creating database models
 export class ModelDB {
   table: string;
 
@@ -54,6 +55,8 @@ export class ModelDB {
   }
 }
 
+
+// Superclass of ModelDB for Orders database
 export class OrdersDB extends ModelDB {
   getCurrentOrderByUser = (userId: number): Promise<Order[]> => {
     return this.queryProcessor(`SELECT * FROM orders WHERE user_id=$1`, [userId]);
@@ -65,6 +68,8 @@ export class OrdersDB extends ModelDB {
   }
 }
 
+
+// Superclass for Users database model
 export class UsersDB extends ModelDB {
   createNewUser = async (username: string, password: string): Promise<User | string> => {
     // Check if the user already exists
