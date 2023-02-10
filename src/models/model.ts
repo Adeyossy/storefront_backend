@@ -62,7 +62,7 @@ export class OrdersDB extends ModelDB {
     return this.queryProcessor(`SELECT * FROM orders WHERE user_id=$1`, [userId]);
   }
 
-  getCompletedOrdersByUser = (userId: string): Promise<Order[]> => {
+  getCompletedOrdersByUser = (userId: number): Promise<Order[]> => {
     return this.queryProcessor(`SELECT * FROM orders WHERE user_id=$1 AND 
     orderStatus='completed'`, [userId]);
   }

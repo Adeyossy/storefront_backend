@@ -32,7 +32,13 @@ router.post('/users', async (req: Request, res: Response) => {
       lastName: newUser[0].lastName
     }
 
-    const signedToken = signToken(payload);
+    let signedToken;
+    try {
+      signedToken = signToken(payload);
+    } catch (error) {
+      res.status(400);
+      res.json(`An error occurred: ${error}`);
+    }
     res.json(signedToken);
   }
 });
