@@ -5,10 +5,16 @@ export type Product = {
 }
 
 export type Order = {
-  productId: number,
-  quantity: number,
+  id: number,
   userId: number,
   orderStatus: string
+}
+
+export type OrderProduct = {
+  id: number,
+  quantity: number,
+  orderId: number,
+  productId: number
 }
 
 export type User = {

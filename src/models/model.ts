@@ -1,6 +1,6 @@
 import db from "../db/db";
 import { ProductsDB } from "./storefront";
-import { Order, User } from "./types";
+import { Order, OrderProduct, User } from "./types";
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 
@@ -65,6 +65,11 @@ export class OrdersDB extends ModelDB {
   getCompletedOrdersByUser = (userId: number): Promise<Order[]> => {
     return this.queryProcessor(`SELECT * FROM orders WHERE user_id=$1 AND 
     orderStatus='completed'`, [userId]);
+  }
+
+  addProductToOrder = (quantity: number, orderId: string, productId: string): Promise<OrderProduct[]> => {
+    return this.queryProcessor(`INSERT INTO order_products (quantity, order_id, product_id)
+     VALUES ($1, $2, $3)`, [quantity, orderId, productId]);
   }
 }
 
