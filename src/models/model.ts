@@ -1,6 +1,6 @@
 import db from "../db/db";
 import { ProductsDB } from "./storefront";
-import { Order, OrderProduct, User } from "./types";
+import { Order, OrderProduct, Product, User } from "./types";
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 
@@ -18,7 +18,7 @@ export class ModelDB {
     : Promise<Type[]> => {
     try {
       const connection = await db.connect();
-      const result = await connection.query(query);
+      const result = await connection.query(query, values);
       connection.release();
       return result.rows;
     } catch (error) {
@@ -28,7 +28,7 @@ export class ModelDB {
 
   getIndex = async <Type>(): Promise<Type[]> => {
     try {
-      return this.queryProcessor(`SELECT * FROM $1`, [this.table]);
+      return this.queryProcessor(`SELECT * FROM ${this.table}`, []);
     } catch (error) {
       throw new Error(`An error occurred: ${error}`);
     }
@@ -36,7 +36,7 @@ export class ModelDB {
 
   showEntity = async <Type>(id: number): Promise<Type[]> => {
     try {
-      return this.queryProcessor(`SELECT * FROM $1 WHERE id=$2`, [this.table, id]);
+      return this.queryProcessor(`SELECT * FROM ${this.table} WHERE id=$1`, [id]);
     } catch (error) {
       throw new Error(`An error occurred: ${error}`);
     }
@@ -44,10 +44,11 @@ export class ModelDB {
 
   createEntity = async <Type>(entity: Type): Promise<Type[]> => {
     try {
-      const values = [this.table, Object.keys(entity as object).join(", "),
-      Object.values(entity as object).join(", ")]
+      const columnNames = Object.keys(entity as object).join(", ");
+      const columnValues = Object.values(entity as object);
 
-      return this.queryProcessor(`INSERT INTO $1 ($2) VALUES ($3)`, values);
+      return this.queryProcessor(`INSERT INTO ${this.table} (${columnNames}) 
+      VALUES (${columnValues.map((_val, i) => `$${i+1}`).join(', ')}) RETURNING *`, columnValues);
 
     } catch (error) {
       throw new Error(`An error occurred: ${error}`);
@@ -89,7 +90,7 @@ export class UsersDB extends ModelDB {
 
   authenticateUser = async (username: string, password: string): Promise<User | string> => {
     const user = <User[]>await this.queryProcessor(`SELECT password FROM 
-    $1 WHERE username=$2`, [this.table, username]);
+    ${this.table} WHERE username=$1`, [username]);
 
     if (user.length) {
       const isAuthenticated = await bcrypt
