@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express'
 import bodyParser from 'body-parser'
 import router from './routes/products';
 import userRouter from './routes/users';
+import orderRouter from './routes/orders';
 import cors from 'cors';
 
 const app = express();
@@ -19,6 +20,7 @@ app.get('/', function (req: Request, res: Response) {
 
 app.use(router);
 app.use(userRouter);
+app.use(orderRouter);
 
 app.listen(3000, function () {
     console.log(`starting app on: ${address}`)

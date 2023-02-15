@@ -10,8 +10,8 @@ router.get('/orders/:userId', verifyToken, async (req: Request, res: Response) =
 
   if(userId) {
     const ordersModel = new OrdersDB('orders');
-    const orders = <Order[]> await ordersModel.showEntity(parseInt(userId));
-    res.json(orders[0]);
+    const orders = <Order[]> await ordersModel.getCurrentOrderByUser(parseInt(userId));
+    res.json(orders);
   }
 
   res.send('Invalid userId');
@@ -27,11 +27,13 @@ router.post('/orders/:orderId/products', verifyToken, async (req: Request, res: 
       res.status(201).json(addedProduct[0]);
     }
 
-    res.send('Invalid order');
+    res.status(400).send('Invalid order');
   }
 
-  res.send(`Order with ID ${orderId} is invalid`);
+  res.status(400).send(`Order with ID ${orderId} is invalid`);
 });
 
 //Add a filter to say "groupby userId"
 router.get('/orders');
+
+export default router;

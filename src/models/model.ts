@@ -59,8 +59,15 @@ export class ModelDB {
 
 // Superclass of ModelDB for Orders database
 export class OrdersDB extends ModelDB {
+  createOrderProducts = (orderProduct: OrderProduct): Promise<OrderProduct[]> => {
+    return this.queryProcessor(`INSERT INTO order_products (quantity)`, 
+    [orderProduct.quantity, orderProduct.order_id, orderProduct.product_id])
+  }
+
   getCurrentOrderByUser = (userId: number): Promise<Order[]> => {
-    return this.queryProcessor(`SELECT * FROM orders WHERE user_id=$1`, [userId]);
+    return this.queryProcessor(`SELECT * FROM order_products INNER JOIN
+    products ON order_products.product_id = products.id WHERE 
+    product.user_id=$1`, [userId]);
   }
 
   getCompletedOrdersByUser = (userId: number): Promise<Order[]> => {
@@ -68,9 +75,9 @@ export class OrdersDB extends ModelDB {
     orderStatus='completed'`, [userId]);
   }
 
-  addProductToOrder = (quantity: number, orderId: string, productId: string): Promise<OrderProduct[]> => {
+  addProductToOrder = (quantity: number, orderId: number, productId: number): Promise<OrderProduct[]> => {
     return this.queryProcessor(`INSERT INTO order_products (quantity, order_id, product_id)
-     VALUES ($1, $2, $3)`, [quantity, orderId, productId]);
+     VALUES ($1, $2, $3) RETURNING *`, [quantity, orderId, productId]);
   }
 }
 

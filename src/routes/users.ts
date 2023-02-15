@@ -28,8 +28,8 @@ router.post('/users', async (req: Request, res: Response) => {
 
     const payload = {
       username: newUser[0].username,
-      firstName: newUser[0].firstName,
-      lastName: newUser[0].lastName
+      firstName: newUser[0]?.first_name,
+      lastName: newUser[0]?.last_name
     }
 
     let signedToken;
@@ -39,7 +39,7 @@ router.post('/users', async (req: Request, res: Response) => {
       res.status(400);
       res.json(`An error occurred: ${error}`);
     }
-    res.json(signedToken);
+    res.status(401).json(signedToken);
   }
 });
 

@@ -5,21 +5,22 @@ export type Product = {
 }
 
 export type Order = {
-  id: number,
-  userId: number,
-  orderStatus: string
+  id?: number,
+  user_id: number,
+  order_status: string
 }
 
 export type OrderProduct = {
   id: number,
   quantity: number,
-  orderId: number,
-  productId: number
+  order_id: number,
+  product_id: number
 }
 
 export type User = {
+  id?: number,
   username: string,
-  firstName?: string,
-  lastName?: string,
+  first_name?: string,
+  last_name?: string,
   password: string
 }
