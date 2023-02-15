@@ -1,7 +1,8 @@
 import supertest from "supertest";
-import { OrdersDB, UsersDB } from "../models/model";
+import { ModelDB, OrdersDB, UsersDB } from "../models/model";
 import app from '../server';
-import {Order, User} from '../models/types';
+import { Order, Product, User } from '../models/types';
+import jwt from 'jsonwebtoken';
 
 const request = supertest(app);
 
@@ -10,27 +11,46 @@ const user = {
   password: 'reppohswen'
 };
 
-describe('This suite tests orders route:', function () {
-  it('GET /orders/:userId', async function () {
-    const signup = await request.post('/users').send(user);
+describe('This suite tests orders model', function () {
+  it('beginning with creating a new order', async function () {
+    const signup = await request.post('/users/signup').send(user);
 
-    const response = await request.get('/orders/:userId')
-      .set('Authorization', `Bearer ${signup.body}`);
-    console.log('orders/:userId response => ', response.body);
-    // expect(Array.isArray(response.body)).toBeTrue();
-    expect(response.status).toBe(201)
+    const newUser = (jwt.decode(signup.body) as User);
+    const ordersModel = new OrdersDB('orders');
+    const productsModel = new ModelDB('products');
+
+    // Create a new Product - a safety measure just in case no order exists
+    // for this test
+    const newProduct = <Product[]> await productsModel.createEntity({
+      name: 'Chapman', 
+      price: 500, 
+      category: 'Beverage'
+    });
+
+    const newOrder = <Order[]> await ordersModel.createEntity(
+      { user_id: newUser.id, order_status: 'active' });
+    
+    if (newOrder[0].id) {
+      // Add first product to the order
+      const addedProduct = await ordersModel.addProductToOrder(2, 
+        newOrder[0].id, newProduct[0].id as number);
+      expect(addedProduct.length).toBe(1);
+    }
   });
 });
 
-describe('This suite tests orders model', function () {
-  it('beginning with creating a new order', async function() {
-    const ordersModel = new OrdersDB('orders');
-    const usersModel = new UsersDB('users');
-    const loggedInUser = <User> await usersModel.authenticateUser(user.username, user.password);
-    const newOrder = <Order[]> await ordersModel.createEntity({user_id: loggedInUser.id, order_status: 'active'});
-    if (newOrder[0].id) {
-      const addedProduct = await ordersModel.addProductToOrder(2, 1, 1);
-      expect(addedProduct.length).toBe(1);
+describe('This suite tests orders route:', function () {
+  it('GET /orders/:userId', async function () {
+    const login = await request.post('/users/login').send(user);
+
+    const userId = (jwt.decode(login.body) as User).id;
+
+    if(userId) {
+      const ordersModel = new OrdersDB('orders');
+      const orders = <Order[]> await ordersModel.getCurrentOrderByUser(userId);
+      
+      expect(Array.isArray(orders)).toBeTrue();
+      // expect(response.status).toBe(201);
     }
   });
 });

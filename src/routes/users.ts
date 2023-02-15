@@ -17,19 +17,18 @@ router.get('/users/userId', verifyToken, async (req: Request, res: Response) => 
   res.json(users[0]);
 });
 
-router.post('/users', async (req: Request, res: Response) => {
+router.post('/users/signup', async (req: Request, res: Response) => {
   const usersModel = new UsersDB('users');
   const userFromClient = req.body;
   if(userFromClient.username && userFromClient.password) {
-    const newUser = <User[]> await usersModel.createEntity({
-      username: userFromClient.username, 
-      password: userFromClient.password
-    });
+    const newUser = <User> await usersModel.createNewUser(
+      userFromClient.username, userFromClient.password);
 
     const payload = {
-      username: newUser[0].username,
-      firstName: newUser[0]?.first_name,
-      lastName: newUser[0]?.last_name
+      id: newUser.id,
+      username: newUser.username,
+      firstName: newUser?.first_name,
+      lastName: newUser?.last_name
     }
 
     let signedToken;
@@ -39,7 +38,39 @@ router.post('/users', async (req: Request, res: Response) => {
       res.status(400);
       res.json(`An error occurred: ${error}`);
     }
-    res.status(401).json(signedToken);
+    res.status(201).json(signedToken);
+  }
+});
+
+router.post('/users/login', async (req: Request, res: Response) => {
+  const usersModel = new UsersDB('users');
+  const userFromClient = req.body;
+
+  if(userFromClient.username && userFromClient.password) {
+    const newUser = <User> await usersModel.authenticateUser(
+      userFromClient.username, userFromClient.password);
+
+    if(typeof newUser !== 'string') {
+      
+      const payload = {
+        id: newUser.id,
+        username: newUser.username,
+        firstName: newUser?.first_name,
+        lastName: newUser?.last_name
+      }
+  
+      let signedToken;
+      try {
+        signedToken = signToken(payload);
+      } catch (error) {
+        res.status(400);
+        res.json(`An error occurred: ${error}`);
+      }
+      res.status(201).json(signedToken);
+      return;
+    }
+
+    res.status(403).json(newUser);
   }
 });
 

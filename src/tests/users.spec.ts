@@ -7,7 +7,7 @@ const request = supertest(app);
 
 describe('This suite tests the users route', function(){
   it('beginning with the CREATE route', async function(){
-    const response = await request.post('/users').send({
+    const response = await request.post('/users/signup').send({
       username: 'shopper1', 
       password: 'shopper1password'});
     

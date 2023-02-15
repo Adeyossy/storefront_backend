@@ -33,4 +33,10 @@ describe('Suite for testing products models', function () {
       expect(allProducts[0].hasOwnProperty('name')).toBeTrue();
     }
   });
+
+  it('then SHOWS the product with a given product ID', async function (){
+    const productsModel = new ModelDB('products');
+    const product = <Product[]> await productsModel.showEntity(1);
+    expect(product.length).toEqual(1);
+  })
 });

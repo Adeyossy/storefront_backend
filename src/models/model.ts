@@ -48,7 +48,7 @@ export class ModelDB {
       const columnValues = Object.values(entity as object);
 
       return this.queryProcessor(`INSERT INTO ${this.table} (${columnNames}) 
-      VALUES (${columnValues.map((_val, i) => `$${i+1}`).join(', ')}) RETURNING *`, columnValues);
+      VALUES (${columnValues.map((_val, i) => `$${i + 1}`).join(', ')}) RETURNING *`, columnValues);
 
     } catch (error) {
       throw new Error(`An error occurred: ${error}`);
@@ -60,14 +60,17 @@ export class ModelDB {
 // Superclass of ModelDB for Orders database
 export class OrdersDB extends ModelDB {
   createOrderProducts = (orderProduct: OrderProduct): Promise<OrderProduct[]> => {
-    return this.queryProcessor(`INSERT INTO order_products (quantity)`, 
-    [orderProduct.quantity, orderProduct.order_id, orderProduct.product_id])
+    return this.queryProcessor(`INSERT INTO order_products (quantity, order_id, product_id)`,
+      [orderProduct.quantity, orderProduct.order_id, orderProduct.product_id])
   }
 
-  getCurrentOrderByUser = (userId: number): Promise<Order[]> => {
+  getCurrentOrderByUser = async (userId: number): Promise<Order[]> => {
+    const userOrder = <Order[]> await this.queryProcessor(`SELECT id, order_status 
+    FROM orders WHERE user_id=$1`, [userId]);
+
     return this.queryProcessor(`SELECT * FROM order_products INNER JOIN
     products ON order_products.product_id = products.id WHERE 
-    product.user_id=$1`, [userId]);
+    order_products.order_id=$1`, [Number(userOrder[0].id)]);
   }
 
   getCompletedOrdersByUser = (userId: number): Promise<Order[]> => {
@@ -91,12 +94,12 @@ export class UsersDB extends ModelDB {
     const passHash = await bcrypt.hash(password + process.env.PEPPRE,
       parseInt(process.env.SALTRE as string));
 
-    const newUser = <User[]>await this.createEntity({ username, password: passHash });
+    const newUser = <User[]> await this.createEntity({ username: username, password: passHash });
     return newUser[0];
   }
 
   authenticateUser = async (username: string, password: string): Promise<User | string> => {
-    const user = <User[]>await this.queryProcessor(`SELECT password FROM 
+    const user = <User[]>await this.queryProcessor(`SELECT * FROM 
     ${this.table} WHERE username=$1`, [username]);
 
     if (user.length) {

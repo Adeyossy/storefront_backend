@@ -5,35 +5,40 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 ## API Endpoints
 #### Products
-- Index 
-- Show
-- Create [token required]
+- Index => GET '/products' 
+- Show => GET '/products/:productId'
+- Create [token required] => POST '/products'
 - [OPTIONAL] Top 5 most popular products 
 - [OPTIONAL] Products by category (args: product category)
 
 #### Users
-- Index [token required]
-- Show [token required]
-- Create N[token required]
+- Index [token required] => GET '/users'
+- Show [token required] => GET '/users/:userId'
+- Create N[token required] => POST '/users'
 
 #### Orders
-- Current Order by user (args: user id)[token required]
+- Current Order by user (args: user id)[token required] => GET /orders/:userId/
 - [OPTIONAL] Completed Orders by user (args: user id)[token required]
 
 ## Data Shapes 
-#### Product
+#### Product => 
+##### Table: products (id:SERIAL PRIMARY KEY, name:VARCHAR, price:NUMERIC, category:VARCHAR)
 -  id
 - name
 - price
 - [OPTIONAL] category
 
-#### User
+#### User => 
+##### Table: users (id:SERIAL PRIMARY KEY, first_name: VARCHAR, last_name: VARCHAR, username: VARCHAR, password:VARCHAR);
 - id
 - firstName
 - lastName
 - password
 
-#### Orders
+#### Orders => 
+##### Table: orders (id:SERIAL PRIMARY KEY, order_status:VARCHAR, user_id:bigint [foreign key to users table])
+##### Table: order_products(id: SERIAL PRIMARY KEY, quantity:integer, order_id:bigint [foreign key to orders table], product_id:bigint [foreign key to products table])
+
 - id
 - id of each product in the order
 - quantity of each product in the order
