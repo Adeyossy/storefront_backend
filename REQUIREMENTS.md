@@ -23,25 +23,29 @@ These are the notes from a meeting with the frontend developer that describe wha
 ## Data Shapes 
 #### Product => 
 ##### Table: products (id:SERIAL PRIMARY KEY, name:VARCHAR, price:NUMERIC, category:VARCHAR)
--  id
-- name
-- price
-- [OPTIONAL] category
+- id: SERIAL PRIMARY KEY
+- name: VARCHAR
+- price: NUMERIC
+- [OPTIONAL] category: VARCHAR
 
 #### User => 
 ##### Table: users (id:SERIAL PRIMARY KEY, first_name: VARCHAR, last_name: VARCHAR, username: VARCHAR, password:VARCHAR);
-- id
-- firstName
-- lastName
-- password
+- id: SERIAL PRIMARY KEY
+- username: VARCHAR
+- first_name: VARCHAR
+- last_name: VARCHAR
+- password: VARCHAR
 
 #### Orders => 
 ##### Table: orders (id:SERIAL PRIMARY KEY, order_status:VARCHAR, user_id:bigint [foreign key to users table])
+
+- id: SERIAL PRIMARY KEY
+- user_id: bigint [foreign key to users]
+- order_status: VARCHAR (active or complete)
+
+#### Order_Products
 ##### Table: order_products(id: SERIAL PRIMARY KEY, quantity:integer, order_id:bigint [foreign key to orders table], product_id:bigint [foreign key to products table])
-
-- id
-- id of each product in the order
-- quantity of each product in the order
-- user_id
-- status of order (active or complete)
-
+- id: SERIAL PRIMARY KEY
+- quantity: integer
+- order_id: bigint [foreign key to orders table]
+- product_id: bigint [foreign key to products table]

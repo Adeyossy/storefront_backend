@@ -5,7 +5,8 @@
 Run `yarn` in your terminal at the project root to install dependencies. 
 Create databases `storefront` and `storefront_test` in postgresql
 Run `yarn test` for tests.
-Run `yarn watch` to spin up the server.
+Run `yarn watch` to spin up the server on `PORT 3000`
+Database port is `5432`
 Note that no mock data was added and tests are run in a precise order that creates the mock data.
 
 #### List of Environment variables used

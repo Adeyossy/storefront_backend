@@ -64,7 +64,7 @@ export class OrdersDB extends ModelDB {
       [orderProduct.quantity, orderProduct.order_id, orderProduct.product_id])
   }
 
-  getCurrentOrderByUser = async (userId: number): Promise<Order[]> => {
+  getCurrentOrderByUser = async (userId: number): Promise<unknown[]> => {
     const userOrder = <Order[]> await this.queryProcessor(`SELECT id, order_status 
     FROM orders WHERE user_id=$1`, [userId]);
 
@@ -75,7 +75,7 @@ export class OrdersDB extends ModelDB {
 
   getCompletedOrdersByUser = (userId: number): Promise<Order[]> => {
     return this.queryProcessor(`SELECT * FROM orders WHERE user_id=$1 AND 
-    orderStatus='completed'`, [userId]);
+    order_status='completed'`, [userId]);
   }
 
   addProductToOrder = (quantity: number, orderId: number, productId: number): Promise<OrderProduct[]> => {

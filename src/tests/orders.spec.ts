@@ -1,7 +1,7 @@
 import supertest from "supertest";
 import { ModelDB, OrdersDB, UsersDB } from "../models/model";
 import app from '../server';
-import { Order, Product, User } from '../models/types';
+import { Order, OrderProduct, Product, User } from '../models/types';
 import jwt from 'jsonwebtoken';
 
 const request = supertest(app);
@@ -52,5 +52,29 @@ describe('This suite tests orders route:', function () {
       expect(Array.isArray(orders)).toBeTrue();
       // expect(response.status).toBe(201);
     }
+  });
+});
+
+describe('This suite sequentially tests the models for orders', function(){
+  it('beginning with creating an order', async function() {
+    const ordersModel = new OrdersDB('orders');
+    const newOrder = <Order[]> await ordersModel.createEntity({
+      user_id: 1, order_status: 'active'
+    });
+    expect(newOrder.length).toBe(1);
+  });
+
+  it('then adds a product to the new order', async function(){
+    const orderProductsModel = new ModelDB('order_products');
+    const newOrderProducts = <OrderProduct[]> await orderProductsModel.createEntity({
+      quantity: 1, order_id: 1, product_id: 1
+    });
+    expect(Array.isArray(newOrderProducts)).toBeTrue();
+  });
+
+  it('then gets the current order by user', async function(){
+    const ordersModel = new OrdersDB('orders');
+    const currentOrderByUser = await ordersModel.getCurrentOrderByUser(1);
+    expect(currentOrderByUser.length).toBeTruthy();
   });
 });
