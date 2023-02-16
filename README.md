@@ -2,7 +2,9 @@
 
 ## Getting Started
 #### Instructions
-Run `yarn` in your terminal at the project root to install dependencies. Run `yarn test` for tests.
+Run `yarn` in your terminal at the project root to install dependencies. 
+Create databases `storefront` and `storefront_test` in postgresql
+Run `yarn test` for tests.
 Run `yarn watch` to spin up the server.
 Note that no mock data was added and tests are run in a precise order that creates the mock data.
 
