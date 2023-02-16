@@ -4,17 +4,29 @@ import { Pool } from 'pg';
 dotenv.config();
 
 const {
-  PG_HOST, PG_DB, PG_USER, PG_PASSWORD
+  PGHOST, PGDBATABASE, PGUSER, PGPASSWORD, PGDATABASETEST
 } = process.env;
 
-let db: Pool;
+let client: Pool;
 
 if(process.env.ENV === 'dev'){
-  db = new Pool({
-    database: PG_DB
+  client = new Pool({
+    host: PGHOST,
+    database: PGDBATABASE,
+    user: PGUSER,
+    password: PGPASSWORD
   });
-} else {
-  db = new Pool();
+} else { // process.env.ENV === 'test'
+  // I initially used `client = new Pool();` 
+  // Given that Pool uses default names if not specified
+  // My reviewer noted I did not initialize pool properly so I am rewriting it
+
+  client = new Pool({
+    host: PGHOST,
+    database: PGDATABASETEST,
+    user: PGUSER,
+    password: PGPASSWORD
+  });
 }
 
-export default db;
+export default client;
