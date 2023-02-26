@@ -68,9 +68,8 @@ export class OrdersDB extends ModelDB {
     const userOrder = <Order[]> await this.queryProcessor(`SELECT id, order_status 
     FROM orders WHERE user_id=$1`, [userId]);
 
-    return this.queryProcessor(`SELECT * FROM order_products INNER JOIN
-    products ON order_products.product_id = products.id WHERE 
-    order_products.order_id=$1`, [Number(userOrder[0].id)]);
+    return this.queryProcessor(`SELECT * FROM orders INNER JOIN order_products ON orders.id = order_products.order_id INNER JOIN
+    products ON order_products.product_id = products.id WHERE orders.user_id = $1`, [userId]);
   }
 
   getCompletedOrdersByUser = (userId: number): Promise<Order[]> => {
